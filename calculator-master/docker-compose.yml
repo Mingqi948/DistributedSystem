@@ -1,0 +1,10 @@
+version: '3'
+services:
+    server:
+        build: server
+    client:
+        build: client
+        environment: 
+            SERVER_HOST: server
+        depends_on:
+        - server
