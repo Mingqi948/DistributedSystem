@@ -20,28 +20,44 @@ import java.util.concurrent.Executors;
 public class Broker {
 
     @WebMethod
-    public List<Quotation> getQuotations(ClientInfo clientInfo) throws Exception {
+    public List<Quotation> getQuotations(ClientInfo clientInfo) {
 
-        return new ArrayList() {{
-            getQuotation(clientInfo, "localhost", Port.AULD_FELLAS_PORT);   //Send request to Auldfellas
-            getQuotation(clientInfo, "localhost", Port.DODGY_DRIVERS_PORT); //Send request to DodgyDrivers
-            getQuotation(clientInfo, "localhost", Port.GIRL_POWER_PORT);    //Send request to GirldPower
-        }};
+        List<Quotation> quotations = new ArrayList();
+        int[] ports = {9001, 9002, 9003};
 
+
+        for(int port : ports) {
+            try {
+
+                quotations.add(getQuotation(clientInfo, "localhost", port));   //Send request to each port
+
+            } catch (Exception e) {
+                String errorMsg = " is currently not online for " + clientInfo.name + "!";
+                if(port == Port.AULD_FELLAS_PORT) errorMsg = "AuldFellas server" + errorMsg;
+                else if(port == Port.GIRL_POWER_PORT) errorMsg = "GirlPower server" + errorMsg;
+                else if(port == Port.DODGY_DRIVERS_PORT) errorMsg = "DodgyDrivers server " + errorMsg;
+                else errorMsg = "Invalid input for port number.";
+                System.out.println(errorMsg);
+            }
+        }
+
+        return quotations;
     }
 
     //Get one quotation from a given HOST address and a given PORT
     private Quotation getQuotation(ClientInfo clientInfo, String host, int port) throws Exception {
 
-        URL wsdlUrl = new URL("http://" + host + ":" + port + "/quotation?wsdl");
-        QName serviceName = new QName("http://core.service/", "QuoterService");
-        Service service = Service.create(wsdlUrl, serviceName);
-        QName portName = new QName("http://core.service/", "QuoterPort");
-        QuoterService quotationService = service.getPort(portName, QuoterService.class);
-
-        Quotation quotation = quotationService.generateQuotation(clientInfo);
-
-        return quotation;
+        try {
+            URL wsdlUrl = new URL("http://" + host + ":" + port + "/quotation?wsdl");
+            QName serviceName = new QName("http://core.service/", "QuoterService");
+            Service service = Service.create(wsdlUrl, serviceName);
+            QName portName = new QName("http://core.service/", "QuoterPort");
+            QuoterService quotationService = service.getPort(portName, QuoterService.class);
+            Quotation quotation = quotationService.generateQuotation(clientInfo);
+            return quotation;
+        } catch (Exception e) {
+            throw new Exception();
+        }
     }
 
     public static void main(String[] args) {
@@ -53,13 +69,6 @@ public class Broker {
             endpoint.publish(context);
             server.start();
             System.out.println("Broker server running >>");
-
-            URL wsdlUrl = new URL("http://" + "localhost:" + Port.GIRL_POWER_PORT + "/quotation?wsdl");
-            QName serviceName = new QName("http://core.service/", "QuoterService");
-            Service service = Service.create(wsdlUrl, serviceName);
-            QName portName = new QName("http://core.service/", "QuoterPort");
-            QuoterService quotationService = service.getPort(portName, QuoterService.class);
-            quotationService.generateQuotation(new ClientInfo("Donald Duck", ClientInfo.MALE, 35, 5, 2, "XYZ567/9"));
 
         } catch (Exception e) {
             e.printStackTrace();

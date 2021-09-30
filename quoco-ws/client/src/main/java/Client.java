@@ -38,7 +38,6 @@ public class Client {
                 displayProfile(info);
 
                 List<Quotation> quotations = brokerService.getQuotations(info);
-
                 for(Quotation q : quotations) {
                     displayQuotation(q);
                 }
