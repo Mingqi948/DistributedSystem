@@ -9,6 +9,7 @@ import java.io.Serializable;
  *
  */
 public class ClientInfo implements Serializable {
+
 	public static final char MALE				= 'M';
 	public static final char FEMALE				= 'F';
 	

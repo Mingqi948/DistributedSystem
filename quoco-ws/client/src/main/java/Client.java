@@ -1,8 +1,10 @@
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.text.NumberFormat;
-
 import service.core.*;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+import java.net.URL;
+import java.text.NumberFormat;
+import java.util.List;
 
 public class Client {
 
@@ -18,36 +20,34 @@ public class Client {
             new ClientInfo("Donald Duck", ClientInfo.MALE, 35, 5, 2, "XYZ567/9")
     };
 
-    /**
-     * This is the starting point for the application. Here, we must
-     * get a reference to the Broker Service and then invoke the
-     * getQuotations() method on that service.
-     *
-     * Finally, you should print out all quotations returned
-     * by the service.
-     *
-     * @param args
-     */
+
     public static void main(String[] args) {
-
         try {
-            Registry registry = LocateRegistry.getRegistry(1099);
-            BrokerService brokerService = (BrokerService) registry.lookup(Constants.BROKER_SERVICE);
+            String host = "localhost";
+            int port = Port.BROKER_PORT;
+            // More Advanced flag-based configuration
+            // [ copy this from the ws-quote example client ]
 
-            // Create the broker and run the test data
+            URL wsdlUrl = new URL("http://" + host + ":" + port + "/broker?wsdl");
+            QName serviceName = new QName("http://core.service/", "BrokerService");
+            Service service = Service.create(wsdlUrl, serviceName);
+            QName portName = new QName("http://core.service/", "BrokerPort");
+            BrokerService brokerService = service.getPort(portName, BrokerService.class);
+
             for (ClientInfo info : clients) {
                 displayProfile(info);
 
-                // Retrieve quotations from the broker and display them...
-                for (Quotation quotation : brokerService.getQuotations(info)) {
-                    displayQuotation(quotation);
+                List<Quotation> quotations = brokerService.getQuotations(info);
+
+                for(Quotation q : quotations) {
+                    displayQuotation(q);
                 }
 
-                // Print a couple of lines between each client
                 System.out.println("\n");
             }
+
         } catch (Exception e) {
-            System.out.println("Broker service is unavailable.");
+            e.printStackTrace();
         }
     }
 
@@ -70,7 +70,6 @@ public class Client {
         System.out.println("|                                     |                                     |                                     |");
         System.out.println("|=================================================================================================================|");
     }
-
     /**
      * Display a quotation nicely - note that the assumption is that the quotation will follow
      * immediately after the profile (so the top of the quotation box is missing).

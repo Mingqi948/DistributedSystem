@@ -9,6 +9,11 @@ import java.io.Serializable;
  *
  */
 public class Quotation implements Serializable {
+
+	public Quotation() {
+		super();
+	}
+
 	public Quotation(String company, String reference, double price) {
 		this.company = company;
 		this.reference = reference;
