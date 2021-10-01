@@ -3,32 +3,47 @@ version: '3.9'
 services:
 
   broker:
+    container_name: broker_ws
+    image: broker_ws_img
+    environment:
+      HOSTNAME: brokerService
     build: broker
-    network_mode: host
+    ports:
+      - "9000:9000"
 
   auldfellas:
+    container_name: auldfellas_ws
+    image: auldfellas_ws_img
     build: auldfellas
-    network_mode: host
+    ports:
+      - "9001:9001"
     depends_on:
       - broker
 
   girlpower:
+    container_name: girlpower_ws
+    image: girlpower_ws_img
     build: girlpower
-    network_mode: host
+    ports:
+      - "9002:9002"
     depends_on:
       - broker
 
   dodgydrivers:
+    container_name: dodgydrivers_ws
+    image: dodgydrivers_ws_img
     build: dodgydrivers
-    network_mode: host
+    ports:
+      - "9003:9003"
     depends_on:
       - broker
 
   client:
+    container_name: client_ws
+    image: client_ws_img
     build: client
-    network_mode: host
     depends_on:
-      - girlpower
       - dodgydrivers
+      - girlpower
       - auldfellas
       - broker

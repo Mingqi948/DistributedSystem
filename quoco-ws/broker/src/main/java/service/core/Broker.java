@@ -47,6 +47,7 @@ public class Broker {
     //Get one quotation from a given HOST address and a given PORT
     private Quotation getQuotation(ClientInfo clientInfo, String host, int port) throws Exception {
 
+        //Connect to service
         try {
             URL wsdlUrl = new URL("http://" + host + ":" + port + "/quotation?wsdl");
             QName serviceName = new QName("http://core.service/", "QuoterService");
@@ -68,7 +69,6 @@ public class Broker {
             HttpContext context = server.createContext("/broker");
             endpoint.publish(context);
             server.start();
-            System.out.println("Broker server running >>");
 
         } catch (Exception e) {
             e.printStackTrace();

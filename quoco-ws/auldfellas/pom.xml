@@ -71,7 +71,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>AFQServer</mainClass>
+                                    <mainClass>${main.class}</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

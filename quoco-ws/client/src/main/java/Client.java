@@ -2,6 +2,7 @@ import service.core.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.List;
@@ -22,29 +23,29 @@ public class Client {
 
 
     public static void main(String[] args) {
+        // More Advanced flag-based configuration
+        // [ copy this from the ws-quote example client ]
+        //Connect to broker service
+        String host = args.length > 0 ? "localhost":args[0];
         try {
-            String host = "localhost";
-            int port = Port.BROKER_PORT;
-            // More Advanced flag-based configuration
-            // [ copy this from the ws-quote example client ]
-
-            URL wsdlUrl = new URL("http://" + host + ":" + port + "/broker?wsdl");
+            URL wsdlUrl = new URL("http://" + host + ":" + Port.BROKER_PORT + "/broker?wsdl");
             QName serviceName = new QName("http://core.service/", "BrokerService");
             Service service = Service.create(wsdlUrl, serviceName);
             QName portName = new QName("http://core.service/", "BrokerPort");
             BrokerService brokerService = service.getPort(portName, BrokerService.class);
-
             for (ClientInfo info : clients) {
                 displayProfile(info);
 
                 List<Quotation> quotations = brokerService.getQuotations(info);
-                for(Quotation q : quotations) {
+                for (Quotation q : quotations) {
                     displayQuotation(q);
                 }
-
                 System.out.println("\n");
             }
-
+        } catch (WebServiceException e) {
+            System.out.println("Broker service is not reachable.");
+            System.out.println(e.getCause());
+            System.out.println(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
