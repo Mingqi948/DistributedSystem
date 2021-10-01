@@ -5,8 +5,6 @@ services:
   broker:
     container_name: broker_ws
     image: broker_ws_img
-    environment:
-      HOSTNAME: brokerService
     build: broker
     ports:
       - "9000:9000"

@@ -26,7 +26,7 @@ public class Client {
         // More Advanced flag-based configuration
         // [ copy this from the ws-quote example client ]
         //Connect to broker service
-        String host = args.length > 0 ? "localhost":args[0];
+        String host = args.length > 0 ? args[0]:"localhost";
         try {
             URL wsdlUrl = new URL("http://" + host + ":" + Port.BROKER_PORT + "/broker?wsdl");
             QName serviceName = new QName("http://core.service/", "BrokerService");
