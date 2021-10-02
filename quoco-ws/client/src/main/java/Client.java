@@ -1,8 +1,12 @@
 import service.core.*;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceListener;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
+import java.net.InetAddress;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.List;
@@ -21,14 +25,36 @@ public class Client {
             new ClientInfo("Donald Duck", ClientInfo.MALE, 35, 5, 2, "XYZ567/9")
     };
 
+    public static void main(String args[]) throws Exception {
+        JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
+        jmDNS.addServiceListener("_http._tcp.local.", new WSDLServiceListener());
+    }
 
-    public static void main(String[] args) {
-        // More Advanced flag-based configuration
-        // [ copy this from the ws-quote example client ]
-        //Connect to broker service
-        String host = args.length > 0 ? args[0]:"localhost";
+    public static class WSDLServiceListener implements ServiceListener {
+        @Override
+        public void serviceAdded(ServiceEvent event) {
+        }
+
+        @Override
+        public void serviceRemoved(ServiceEvent event) {
+        }
+
+        @Override
+        public void serviceResolved(ServiceEvent event) {
+            System.out.println(1);
+            String path = event.getInfo().getPropertyString("path");
+            if (path != null) {
+                String url =event.getInfo().getURLs()[0];
+                connectToService(url);
+            }
+        }
+    }
+
+
+    public static void connectToService(String url) {
+        //Connect to service
         try {
-            URL wsdlUrl = new URL("http://" + host + ":" + Port.BROKER_PORT + "/broker?wsdl");
+            URL wsdlUrl = new URL(url);
             QName serviceName = new QName("http://core.service/", "BrokerService");
             Service service = Service.create(wsdlUrl, serviceName);
             QName portName = new QName("http://core.service/", "BrokerPort");

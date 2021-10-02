@@ -19,8 +19,8 @@ import java.util.concurrent.Executors;
 @SOAPBinding(style= SOAPBinding.Style.RPC, use= SOAPBinding.Use.LITERAL)
 public class Quoter extends AbstractQuotationService{
     // All references are to be prefixed with an AF (e.g. AF001000)
-    public static final String PREFIX = "AF";
-    public static final String COMPANY = "Auld Fellas Ltd.";
+    public static final String PREFIX = "DD";
+    public static final String COMPANY = "Dodgy Drivers Ltd.";
 
     /**
      * Quote generation:

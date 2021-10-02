@@ -3,12 +3,15 @@ package service.core;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Service;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,6 +58,7 @@ public class Broker {
             QName portName = new QName("http://core.service/", "QuoterPort");
             QuoterService quotationService = service.getPort(portName, QuoterService.class);
             Quotation quotation = quotationService.generateQuotation(clientInfo);
+            System.out.println(clientInfo.name + " got a quotation from: " + quotation.company + " Port: " + port);
             return quotation;
         } catch (Exception e) {
             throw new Exception();
@@ -69,6 +73,16 @@ public class Broker {
             HttpContext context = server.createContext("/broker");
             endpoint.publish(context);
             server.start();
+
+            System.out.println("Broker service starts in:");
+            for(int i = 5; i >= 0; i--) {
+                System.out.println(i);
+                Thread.sleep(1000);
+            }
+            System.out.println("Broker service is set up >>");
+
+            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.BROKER_PORT, "path=/broker?wsdl");
 
         } catch (Exception e) {
             e.printStackTrace();
