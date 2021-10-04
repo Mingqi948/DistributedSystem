@@ -1,12 +1,8 @@
 import service.core.*;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceListener;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
-import java.net.InetAddress;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.List;
@@ -25,56 +21,71 @@ public class Client {
             new ClientInfo("Donald Duck", ClientInfo.MALE, 35, 5, 2, "XYZ567/9")
     };
 
-    public static void main(String args[]) throws Exception {
-        JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
-        jmDNS.addServiceListener("_http._tcp.local.", new WSDLServiceListener());
-    }
 
-    public static class WSDLServiceListener implements ServiceListener {
-        @Override
-        public void serviceAdded(ServiceEvent event) {
-        }
+    public static void main(String args[]) {
 
-        @Override
-        public void serviceRemoved(ServiceEvent event) {
-        }
-
-        @Override
-        public void serviceResolved(ServiceEvent event) {
-            System.out.println(1);
-            String path = event.getInfo().getPropertyString("path");
-            if (path != null) {
-                String url =event.getInfo().getURLs()[0];
-                connectToService(url);
-            }
-        }
-    }
-
-
-    public static void connectToService(String url) {
-        //Connect to service
         try {
-            URL wsdlUrl = new URL(url);
-            QName serviceName = new QName("http://core.service/", "BrokerService");
-            Service service = Service.create(wsdlUrl, serviceName);
-            QName portName = new QName("http://core.service/", "BrokerPort");
-            BrokerService brokerService = service.getPort(portName, BrokerService.class);
-            for (ClientInfo info : clients) {
-                displayProfile(info);
 
-                List<Quotation> quotations = brokerService.getQuotations(info);
-                for (Quotation q : quotations) {
-                    displayQuotation(q);
+            String brokerHost = args.length > 0 ? args[0] : "http://localhost:9000/broker?wsdl";
+
+            //Get urls from broker first
+            System.out.println("Connecting to broker at " + brokerHost);
+            List<URL> urls = connectToBroker(new URL(brokerHost));
+
+            //Get quotations from each url and for each client
+            for(ClientInfo info : clients) {
+                displayProfile(info);
+                for(URL u : urls) {
+                    Quotation quotation = getQuotation(info, u);
+                    if(quotation != null) displayQuotation(quotation);
                 }
-                System.out.println("\n");
             }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     *
+     * @param url
+     * Connect to service
+     */
+    private static List<URL> connectToBroker(URL url) {
+        List<URL> urls = null;
+        try {
+            QName serviceName = new QName("http://core.service/", "BrokerService");
+            Service service = Service.create(url, serviceName);
+            QName portName = new QName("http://core.service/", "BrokerPort");
+            BrokerService brokerService = service.getPort(portName, BrokerService.class);;
+
+            //Get url list from broker service
+            urls = brokerService.getURLs();
+
         } catch (WebServiceException e) {
             System.out.println("Broker service is not reachable.");
-            System.out.println(e.getCause());
-            System.out.println(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return urls;
+    }
+
+    //Get one quotation from a given HOST address
+    private static Quotation getQuotation(ClientInfo clientInfo, URL url) {
+        //Connect to QuoterService
+        Quotation quotation = null;
+        try {
+            QName serviceName = new QName("http://core.service/", "QuoterService");
+            Service service = Service.create(url, serviceName);
+            QName portName = new QName("http://core.service/", "QuoterPort");
+            QuoterService quotationService = service.getPort(portName, QuoterService.class);
+            quotation = quotationService.generateQuotation(clientInfo);
+        } catch (Exception e) {
+            System.out.println("Can't connect to " + url + " for " + clientInfo.name);
+        }
+        return quotation;
     }
 
     /**
@@ -104,7 +115,7 @@ public class Client {
      */
     public static void displayQuotation(Quotation quotation) {
         System.out.println(
-                "| Company: " + String.format("%1$-26s", quotation.company) +
+                "| Company: " +  String.format("%1$-26s", quotation.company) +
                         " | Reference: " + String.format("%1$-24s", quotation.reference) +
                         " | Price: " + String.format("%1$-28s", NumberFormat.getCurrencyInstance().format(quotation.price))+" |");
         System.out.println("|=================================================================================================================|");

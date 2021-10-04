@@ -2,10 +2,14 @@ package service.core;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.ws.Endpoint;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
@@ -56,12 +60,19 @@ public class Quoter extends AbstractQuotationService {
 
     public static void main(String[] args) {
         try {
+            //WSDL service
             Endpoint endpoint = Endpoint.create(new Quoter());
             HttpServer server = HttpServer.create(new InetSocketAddress(Port.AULD_FELLAS_PORT), 5);
             server.setExecutor(Executors.newFixedThreadPool(5));
             HttpContext context = server.createContext("/quotation");
             endpoint.publish(context);
             server.start();
+
+            //JmDNS implement
+            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.AULD_FELLAS_PORT, "path=/quotation?wsdl");
+            jmdns.registerService(serviceInfo);
+
             System.out.println("Auldfellas server running >>");
         } catch (Exception e) {
             e.printStackTrace();
