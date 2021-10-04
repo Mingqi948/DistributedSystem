@@ -8,6 +8,8 @@ services:
     build: broker
     ports:
       - "9000:9000"
+    expose:
+      - "9000"
     depends_on:
       - auldfellas
       - girlpower
@@ -33,13 +35,3 @@ services:
     build: dodgydrivers
     ports:
       - "9003:9003"
-
-  client:
-    container_name: client_ws
-    image: client_ws_img
-    build: client
-    depends_on:
-      - dodgydrivers
-      - girlpower
-      - auldfellas
-      - broker
