@@ -22,6 +22,7 @@ public class Broker {
 
     @WebMethod
     public List<URL> getURLs() {
+        System.out.println("Received new request, now processing:");
         return discover();
     }
 
@@ -32,7 +33,8 @@ public class Broker {
         try {
             //Discover services
             JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
-            System.out.println("Discovering services on host: " + jmDNS.getInetAddress() + ", please wait....");
+            System.out.println("Discovering services on host: " + jmDNS.getInetAddress().getHostAddress()
+                    + ", please wait....");
 
             //Print out services found/discovered
             String discoveries = "";

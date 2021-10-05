@@ -26,7 +26,8 @@ public class Client {
 
         try {
 
-            String brokerHost = args.length > 0 ? args[0] : "http://localhost:9000/broker?wsdl";
+            String brokerHost = args.length > 0 ? "http://" + args[0] + ":9000/broker?wsdl" : "http://localhost:9000/broker?wsdl";
+            Thread.sleep(10000); //System waits for other 3 quoter services, for docker container case
 
             //Get urls from broker first
             System.out.println("Connecting to broker at " + brokerHost);
@@ -42,8 +43,7 @@ public class Client {
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Trouble: " + e.getMessage());
         }
     }
 
@@ -66,6 +66,7 @@ public class Client {
 
         } catch (WebServiceException e) {
             System.out.println("Broker service is not reachable.");
+            System.exit(-1);
         } catch (Exception e) {
             e.printStackTrace();
         }

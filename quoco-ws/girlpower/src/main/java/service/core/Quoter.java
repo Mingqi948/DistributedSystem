@@ -73,7 +73,7 @@ public class Quoter extends AbstractQuotationService{
             ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.GIRL_POWER_PORT, "path=/quotation?wsdl");
             jmdns.registerService(serviceInfo);
 
-            System.out.println(String.format("GirlPower server running at %s >>", jmdns.list("_http._tcp.local.")[0].getURLs()[0]));
+            System.out.println(String.format("GirlPower server running at %s >>", jmdns.getInetAddress().getHostAddress()));
         } catch (Exception e) {
             e.printStackTrace();
         }
