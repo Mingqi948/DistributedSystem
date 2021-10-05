@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 services:
 
@@ -7,8 +7,6 @@ services:
     image: broker_ws_img
     build: broker
     network_mode: host
-    expose:
-      - 9000
     depends_on:
       - auldfellas
       - girlpower
@@ -25,7 +23,7 @@ services:
     container_name: girlpower_ws
     image: girlpower_ws_img
     build: girlpower
-    network_mode: host
+    network_mode: do
 
 
   dodgydrivers:
@@ -41,4 +39,3 @@ services:
     network_mode: host
     depends_on:
       - broker
-

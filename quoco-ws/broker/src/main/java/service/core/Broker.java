@@ -8,7 +8,9 @@ import javax.jmdns.ServiceInfo;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import javax.xml.namespace.QName;
 import javax.xml.ws.Endpoint;
+import javax.xml.ws.Service;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -20,16 +22,28 @@ import java.util.concurrent.Executors;
 @SOAPBinding(style= SOAPBinding.Style.DOCUMENT, use= SOAPBinding.Use.LITERAL)
 public class Broker {
 
+    //A WSDL web method to return quotations list
     @WebMethod
-    public List<URL> getURLs() {
-        System.out.println("Received new request, now processing:");
-        return discover();
+    public List<Quotation> getQuotations(ClientInfo clientInfo) {
+        List<Quotation> quotations = new ArrayList();
+        List<URL> urls = discover(); //Using jmDNS to scan services
+        for(URL url : urls) {
+            try {
+                QName serviceName = new QName("http://core.service/", "QuoterService");
+                Service service = Service.create(url, serviceName);
+                QName portName = new QName("http://core.service/", "QuoterPort");
+                QuoterService quotationService = service.getPort(portName, QuoterService.class);
+                quotations.add(quotationService.generateQuotation(clientInfo));
+            } catch (Exception e) {
+                System.out.println("Can't connect to " + url + " for " + clientInfo.name);
+            }
+        }
+        return quotations;
     }
 
+
     private static List<URL> discover() {
-
         List<URL> urls = new ArrayList();
-
         try {
             //Discover services
             JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
@@ -64,9 +78,6 @@ public class Broker {
             HttpContext context = server.createContext("/broker");
             endpoint.publish(context);
             server.start();
-
-            //Invoke DNS to discover services
-            discover();
 
             System.out.println("Broker server set up finished!\n----------------------------------------");
 
