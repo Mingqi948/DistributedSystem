@@ -6,9 +6,9 @@ services:
     container_name: broker_ws
     image: broker_ws_img
     build: broker
-    ports:
-      - "9000:9000"
     network_mode: host
+    #ports:
+      #- "9000:9000"
     depends_on:
       - auldfellas
       - girlpower

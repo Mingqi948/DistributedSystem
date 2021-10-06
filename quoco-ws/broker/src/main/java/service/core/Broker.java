@@ -25,8 +25,26 @@ public class Broker {
     //A WSDL web method to return quotations list
     @WebMethod
     public List<Quotation> getQuotations(ClientInfo clientInfo) {
+
         List<Quotation> quotations = new ArrayList();
-        List<URL> urls = discover(); //Using jmDNS to scan services
+        List<URL> urls = new ArrayList<>();
+
+        //Using jmDNS to scan/discover services
+        try {
+            JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
+            System.out.println("\nReceived new request & Discovering services on host: "
+                    + jmDNS.getInetAddress().getHostAddress()
+                    + ", please wait....");
+            for(ServiceInfo info : jmDNS.list("_http._tcp.local.")) {
+                urls.add(new URL(info.getURLs()[0]));
+            }
+            if(urls.size() == 0) System.out.println("No service found!");
+            else System.out.println("Services found for " + clientInfo.name + ": " + urls + "\n");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        //Connect to quoter services by WSDL interface
         for(URL url : urls) {
             try {
                 QName serviceName = new QName("http://core.service/", "QuoterService");
@@ -39,31 +57,6 @@ public class Broker {
             }
         }
         return quotations;
-    }
-
-
-    private static List<URL> discover() {
-        List<URL> urls = new ArrayList();
-        try {
-            //Discover services
-            JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
-            System.out.println("Discovering services on host: " + jmDNS.getInetAddress().getHostAddress()
-                    + ", please wait....");
-
-            //Print out services found/discovered
-            String discoveries = "";
-            for(ServiceInfo info : jmDNS.list("_http._tcp.local.")) {
-                String s = info.getURLs()[0];
-                if(s != null && s.length() > 0)
-                    discoveries += s + "\n";
-                urls.add(new URL(s));
-            }
-            if(discoveries.length() == 0) System.out.println("No service found!");
-            else System.out.println("Services found:\n" + discoveries);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return urls;
     }
 
     public static void main(String[] args) {
