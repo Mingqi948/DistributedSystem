@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+  activemq:
+    image: rmohr/activemq:latest
+    container_name: activemq
+    ports:
+      - "8161:8161"
+      - "61616:61616"
+
+  auldfellas:
+    image: auldfellas_jms_img
+    container_name: auldfellas_jms
+    build: auldfellas
+    depends_on:
+      - activemq
+    network_mode: "service:activemq"
+
+  client:
+    image: client_jms_img
+    container_name: client_jms
+    build: client
+    depends_on:
+      - auldfellas
+    network_mode: "service:activemq"
