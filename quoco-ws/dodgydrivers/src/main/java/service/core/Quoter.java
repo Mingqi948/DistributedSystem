@@ -60,6 +60,8 @@ public class Quoter extends AbstractQuotationService{
 
     public static void main(String[] args) {
         try {
+            String hostConfig = args.length > 0 ? "path=" + args[0] : "path=http://localhost:9003/quotation?wsdl";
+
             //Publish WSDL service
             Endpoint endpoint = Endpoint.create(new Quoter());
             HttpServer server = HttpServer.create(new InetSocketAddress(Port.DODGY_DRIVERS_PORT), 5);
@@ -68,9 +70,9 @@ public class Quoter extends AbstractQuotationService{
             endpoint.publish(context);
             server.start();
 
-            //Register to DNS
+            //Register service to DNS
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
-            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.DODGY_DRIVERS_PORT, "path=/quotation?wsdl");
+            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.DODGY_DRIVERS_PORT, hostConfig);
             jmdns.registerService(serviceInfo);
 
             System.out.println(String.format("DodgyDrivers server running at %s >>", jmdns.getInetAddress().getHostAddress()));

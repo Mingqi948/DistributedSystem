@@ -11,6 +11,7 @@ import javax.jws.soap.SOAPBinding;
 import javax.xml.ws.Endpoint;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.concurrent.Executors;
 
 /**
@@ -60,6 +61,8 @@ public class Quoter extends AbstractQuotationService {
 
     public static void main(String[] args) {
         try {
+            String hostConfig = args.length > 0 ? "path=" + args[0] : "path=http://localhost:9001/quotation?wsdl";
+
             //WSDL service
             Endpoint endpoint = Endpoint.create(new Quoter());
             HttpServer server = HttpServer.create(new InetSocketAddress(Port.AULD_FELLAS_PORT), 5);
@@ -70,7 +73,7 @@ public class Quoter extends AbstractQuotationService {
 
             //JmDNS implement
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
-            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.AULD_FELLAS_PORT, "path=/quotation?wsdl");
+            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "sqs", Port.AULD_FELLAS_PORT, hostConfig);
             jmdns.registerService(serviceInfo);
 
             System.out.println(String.format("Auldfellas server running at %s >>", jmdns.getInetAddress().getHostAddress()));

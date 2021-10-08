@@ -11,7 +11,6 @@ import javax.jws.soap.SOAPBinding;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Service;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,6 +21,8 @@ import java.util.concurrent.Executors;
 @SOAPBinding(style= SOAPBinding.Style.DOCUMENT, use= SOAPBinding.Use.LITERAL)
 public class Broker {
 
+    private static String host;
+
     //A WSDL web method to return quotations list
     @WebMethod
     public List<Quotation> getQuotations(ClientInfo clientInfo) {
@@ -31,8 +32,9 @@ public class Broker {
 
         //Using jmDNS to scan/discover services
         try {
-            JmDNS jmDNS = JmDNS.create(InetAddress.getLocalHost());
-            System.out.println("\nReceived new request & Discovering services on host: "
+            System.out.println("-------------------------------------------------------------------------");
+            JmDNS jmDNS = JmDNS.create(host);
+            System.out.println("Received new request & Discovering services on host: "
                     + jmDNS.getInetAddress().getHostAddress()
                     + ", please wait....");
             for(ServiceInfo info : jmDNS.list("_http._tcp.local.")) {
@@ -62,9 +64,10 @@ public class Broker {
     public static void main(String[] args) {
         try {
 
+            host = args.length > 0 ? args[0] : "localhost";
+
             System.out.println("Initializing broker server...");
 
-            //Publish WSDL web service
             Endpoint endpoint = Endpoint.create(new Broker());
             HttpServer server = HttpServer.create(new InetSocketAddress(Port.BROKER_PORT), 5);
             server.setExecutor(Executors.newFixedThreadPool(5));

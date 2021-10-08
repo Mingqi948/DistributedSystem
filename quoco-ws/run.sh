@@ -27,5 +27,5 @@ cleanDocker #Clean
 echo ">> Packaging maven project <<"
 mvn clean package #Packaging
 echo ">> Running docker compose <<"
-docker compose -p quoco_ws up #Run docker-compose
+docker-compose -p quoco_ws up #Run docker-compose
 cleanDocker #Finish up

@@ -28,13 +28,13 @@ public class Client {
         try {
 
             URL brokerHost = args.length > 0 ? new URL(args[0]) : new URL("http://localhost:9000/broker?wsdl");
-            Thread.sleep(10000); //System waits for other 3 quoter services, for docker container case
 
-            //Get urls from broker first
-            System.out.println("Connecting to broker at " + brokerHost);
+            System.out.println("Client waiting to start...");
+            Thread.sleep(10000); //System waits for other 3 quoter services, for docker container case
 
             //Get quotations from broker and print out
             for(ClientInfo info : clients) {
+                System.out.println("Connecting to broker at " + brokerHost);
                 List<Quotation> quotations = connectToBroker(info, brokerHost);
                 displayProfile(info);
                 for(Quotation quotation : quotations) {

@@ -6,9 +6,8 @@ services:
     container_name: broker_ws
     image: broker_ws_img
     build: broker
-    network_mode: host
-    #ports:
-      #- "9000:9000"
+    ports:
+      - "9000:9000"
     depends_on:
       - auldfellas
       - girlpower
@@ -18,26 +17,22 @@ services:
     container_name: auldfellas_ws
     image: auldfellas_ws_img
     build: auldfellas
-    network_mode: host
 
 
   girlpower:
     container_name: girlpower_ws
     image: girlpower_ws_img
     build: girlpower
-    network_mode: host
 
 
   dodgydrivers:
     container_name: dodgydrivers_ws
     image: dodgydrivers_ws_img
     build: dodgydrivers
-    network_mode: host
 
   client:
     container_name: client_ws
     image: client_ws_img
     build: client
-    network_mode: host
     depends_on:
       - broker
