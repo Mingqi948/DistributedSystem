@@ -6,7 +6,7 @@ function cleanDocker() {
 
   echo ">> Cleaning docker images and containers <<"
   declare -a images=("rmohr/activemq:latest" "auldfellas_jms_img" "client_jms_img")
-  declare -a containers=("activemq" "auldfellas_jms" "client_jms")
+  declare -a containers=("activemq_lab4" "auldfellas_jms" "client_jms")
 
   #Stop & Remove containers
   for container in "${containers[@]}"

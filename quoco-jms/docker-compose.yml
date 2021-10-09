@@ -4,7 +4,7 @@ services:
 
   activemq:
     image: rmohr/activemq:latest
-    container_name: activemq
+    container_name: activemq_lab4
     ports:
       - "8161:8161"
       - "61616:61616"

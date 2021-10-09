@@ -6,7 +6,6 @@ import service.message.QuotationResponseMessage;
 
 import javax.jms.*;
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +41,8 @@ public class Client {
         Topic topic = session.createTopic("APPLICATIONS");
         MessageConsumer consumer = session.createConsumer(queue);
         MessageProducer producer = session.createProducer(topic);
+
+        connection.start();
 
         QuotationRequestMessage quotationRequest =
                 new QuotationRequestMessage(SEED_ID++, clients[0]);
