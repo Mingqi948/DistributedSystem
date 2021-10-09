@@ -7,7 +7,14 @@ import service.core.Quotation;
 import service.message.QuotationRequestMessage;
 import service.message.QuotationResponseMessage;
 
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.Session;
+import javax.jms.ObjectMessage;
+import javax.jms.Topic;
+import javax.jms.Queue;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Message;
 
 public class AFQService extends AbstractQuotationService {
 
