@@ -15,7 +15,6 @@ services:
     build: auldfellas
     depends_on:
       - activemq
-    network_mode: "service:activemq"
 
   client:
     image: client_jms_img
@@ -23,4 +22,3 @@ services:
     build: client
     depends_on:
       - auldfellas
-    network_mode: "service:activemq"

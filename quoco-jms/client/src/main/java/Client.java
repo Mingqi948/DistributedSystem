@@ -5,18 +5,12 @@ import service.message.QuotationRequestMessage;
 import service.message.QuotationResponseMessage;
 
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 
-import javax.jms.Connection;
-import javax.jms.Session;
-import javax.jms.ObjectMessage;
-import javax.jms.Topic;
-import javax.jms.Queue;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Message;
+import javax.jms.*;
 
 
 public class Client {
@@ -40,8 +34,8 @@ public class Client {
     public static void main(String args[]) throws Exception {
 
         String host = args.length > 0 ? args[0] : "localhost";
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");
-        factory.setTrustAllPackages(true);
+        ConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");
+        ((ActiveMQConnectionFactory) factory).setTrustAllPackages(true);
         Connection connection = factory.createConnection();
         connection.setClientID("client");
         Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -58,8 +52,6 @@ public class Client {
         Message request = session.createObjectMessage(quotationRequest);
         cache.put(quotationRequest.id, quotationRequest.info);
         producer.send(request);
-
-        connection.start();
 
         Message message = consumer.receive();
         if (message instanceof ObjectMessage) {

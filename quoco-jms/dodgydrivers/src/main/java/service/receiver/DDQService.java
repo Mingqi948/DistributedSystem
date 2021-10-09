@@ -1,5 +1,6 @@
 package service.receiver;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import service.core.AbstractQuotationService;
 import service.core.ClientInfo;
@@ -16,6 +17,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Message;
 
+@Slf4j
 public class DDQService extends AbstractQuotationService {
 
     // All references are to be prefixed with an AF (e.g. AF001000)
@@ -54,6 +56,8 @@ public class DDQService extends AbstractQuotationService {
     }
 
     public static void main(String[] args) throws Exception {
+
+        log.info("DodgyDrivers service starts");
 
         String host = args.length > 0 ? args[0] : "localhost";
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");

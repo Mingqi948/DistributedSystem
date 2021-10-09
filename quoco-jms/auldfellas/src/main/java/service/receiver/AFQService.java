@@ -1,5 +1,6 @@
 package service.receiver;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import service.core.AbstractQuotationService;
 import service.core.ClientInfo;
@@ -15,7 +16,9 @@ import javax.jms.Queue;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Message;
+import javax.jms.ConnectionFactory;
 
+@Slf4j
 public class AFQService extends AbstractQuotationService {
 
     // All references are to be prefixed with an AF (e.g. AF001000)
@@ -55,9 +58,11 @@ public class AFQService extends AbstractQuotationService {
 
     public static void main(String[] args) throws Exception {
 
+        log.info("AuldFellas service is starts");
+
         String host = args.length > 0 ? args[0] : "localhost";
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");
-        factory.setTrustAllPackages(true);
+        ConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");
+        ((ActiveMQConnectionFactory) factory).setTrustAllPackages(true);
         Connection connection = factory.createConnection();
         connection.setClientID("auldfellas");
         Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -86,8 +91,7 @@ public class AFQService extends AbstractQuotationService {
                     producer.send(response);
                 }
             } else {
-                System.out.println("Unknown message type: " +
-                        message.getClass().getCanonicalName());
+                log.error("Unknown message type: " + message.getClass().getCanonicalName());
             }
         }
 
