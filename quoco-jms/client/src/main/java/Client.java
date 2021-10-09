@@ -6,7 +6,6 @@ import service.message.QuotationResponseMessage;
 
 import javax.jms.*;
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +47,8 @@ public class Client {
         Message request = session.createObjectMessage(quotationRequest);
         cache.put(quotationRequest.id, quotationRequest.info);
         producer.send(request);
+
+        connection.start();
 
         Message message = consumer.receive();
         if (message instanceof ObjectMessage) {
