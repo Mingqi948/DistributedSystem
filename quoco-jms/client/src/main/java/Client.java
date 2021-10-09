@@ -42,6 +42,8 @@ public class Client {
         MessageConsumer consumer = session.createConsumer(queue);
         MessageProducer producer = session.createProducer(topic);
 
+        connection.start();
+
         QuotationRequestMessage quotationRequest =
                 new QuotationRequestMessage(SEED_ID++, clients[0]);
         Message request = session.createObjectMessage(quotationRequest);
