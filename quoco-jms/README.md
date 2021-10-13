@@ -11,8 +11,6 @@ Then, compile each module (client module must be executed at last as it depends 
 mvn compile exec:java -pl <module_name>
 ````
 <br><br>
-<h1>*** There'll always be some console logs on Broker side everytime when Client is executed. ***</h1>
-<br><br>
 <h1>Run with docker-compose</h1>
 You can simply use this command in root folder:
 

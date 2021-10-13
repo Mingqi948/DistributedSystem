@@ -1,22 +1,26 @@
 import org.apache.activemq.ActiveMQConnectionFactory;
 import service.core.ClientInfo;
+import service.core.Constants;
 import service.core.Quotation;
+import service.message.ClientApplicationMessage;
 import service.message.QuotationRequestMessage;
-import service.message.QuotationResponseMessage;
 
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
+import javax.jms.Connection;
+import javax.jms.Session;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Message;
+import javax.jms.ConnectionFactory;
 
-import javax.jms.*;
 
 
 public class Client {
 
     private static long SEED_ID = 0;
-    private static Map<Long, ClientInfo> cache = new HashMap<>();
 
     /**
      * Test Data
@@ -40,37 +44,42 @@ public class Client {
         connection.setClientID("client");
         Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
-        Queue queue = session.createQueue("QUOTATIONS");
-        Topic topic = session.createTopic("APPLICATIONS");
-        MessageConsumer consumer = session.createConsumer(queue);
-        MessageProducer producer = session.createProducer(topic);
-
         connection.start();
 
-        QuotationRequestMessage quotationRequest =
-                new QuotationRequestMessage(SEED_ID++, clients[0]);
-        Message request = session.createObjectMessage(quotationRequest);
-        cache.put(quotationRequest.id, quotationRequest.info);
-        producer.send(request);
+        Queue requestQueue = session.createQueue(Constants.CLIENT_REQUESTS_QUEUE);
+        MessageProducer requestProducer = session.createProducer(requestQueue);
 
-        Message message = consumer.receive();
-        if (message instanceof ObjectMessage) {
-            Object content = ((ObjectMessage) message).getObject();
-            if (content instanceof QuotationResponseMessage) {
-                QuotationResponseMessage response = (QuotationResponseMessage) content;
-                ClientInfo info = cache.get(response.id);
-                displayProfile(info);
-                displayQuotation(response.quotation);
-                System.out.println("\n");
+        for(ClientInfo info : clients) {
+            System.out.println("Sending request to broker for [" + info.name + "]");
+            QuotationRequestMessage quotationRequest =
+                    new QuotationRequestMessage(SEED_ID++, info);
+            Message request = session.createObjectMessage(quotationRequest);
+            requestProducer.send(request);
+
+            Queue responseQueue = session.createQueue(Constants.CLIENT_RESPONSE_QUEUE);
+            MessageConsumer responseConsumer = session.createConsumer(responseQueue);
+            Message message = responseConsumer.receive();
+            try {
+
+                Object content = ((ObjectMessage) message).getObject();
+                ClientApplicationMessage applicationMessage = (ClientApplicationMessage) content;
+                displayProfile(applicationMessage.info);
+                for(Quotation quotation : applicationMessage.quotations) {
+                    displayQuotation(quotation);
+                }
+                message.acknowledge();
+
+            } catch (ClassCastException e) {
+                System.out.println("Unknown message type: " + message.getClass().getCanonicalName());
+            } catch (NullPointerException e) {
+                System.out.println("Time out due to the Failure to process " + info.name);
+                System.exit(-1);
             }
-            message.acknowledge();
-        } else {
-            System.out.println("Unknown message type: " +
-                    message.getClass().getCanonicalName());
         }
 
-
+        connection.close();
     }
+
 
 
     /**

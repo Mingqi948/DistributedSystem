@@ -57,8 +57,6 @@ public class GPQService extends AbstractQuotationService {
 
     public static void main(String[] args) throws Exception {
 
-        log.info("GirlPower service is starts");
-
         String host = args.length > 0 ? args[0] : "localhost";
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");
         factory.setTrustAllPackages(true);
@@ -72,10 +70,12 @@ public class GPQService extends AbstractQuotationService {
         MessageConsumer consumer = session.createConsumer(topic);
 
         connection.start();
+        log.info("GirlPower service starts");
 
         while (true) {
             // Get the next message from the APPLICATION topic
             Message message = consumer.receive();
+            log.info("New message received");
             // Check it is the right type of message
             if (message instanceof ObjectMessage) {
                 // It’s an Object Message
@@ -90,7 +90,7 @@ public class GPQService extends AbstractQuotationService {
                     producer.send(response);
                 }
             } else {
-                System.out.println("Unknown message type: " +
+                log.error("Unknown message type: " +
                         message.getClass().getCanonicalName());
             }
         }

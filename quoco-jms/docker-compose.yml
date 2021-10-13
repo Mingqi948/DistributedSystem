@@ -13,6 +13,31 @@ services:
     image: auldfellas_jms_img
     container_name: auldfellas_jms
     build: auldfellas
+    network_mode: "service:activemq"
+    depends_on:
+      - activemq
+
+  girlpower:
+    image: girlpower_jms_img
+    container_name: girlpower_jms
+    build: girlpower
+    network_mode: "service:activemq"
+    depends_on:
+        - activemq
+
+  dodgydrivers:
+    image: dodgydrivers_jms_img
+    container_name: dodgydrivers_jms
+    build: dodgydrivers
+    network_mode: "service:activemq"
+    depends_on:
+      - activemq
+
+  broker:
+    image: broker_jms_img
+    container_name: broker_jms
+    build: broker
+    network_mode: "service:activemq"
     depends_on:
       - activemq
 
@@ -20,5 +45,9 @@ services:
     image: client_jms_img
     container_name: client_jms
     build: client
+    network_mode: "service:activemq"
     depends_on:
       - auldfellas
+      - dodgydrivers
+      - girlpower
+      - broker

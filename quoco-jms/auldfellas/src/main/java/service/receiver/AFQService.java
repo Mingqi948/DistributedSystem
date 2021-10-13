@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import service.core.AbstractQuotationService;
 import service.core.ClientInfo;
+import service.core.Constants;
 import service.core.Quotation;
 import service.message.QuotationRequestMessage;
 import service.message.QuotationResponseMessage;
@@ -58,8 +59,6 @@ public class AFQService extends AbstractQuotationService {
 
     public static void main(String[] args) throws Exception {
 
-        log.info("AuldFellas service is starts");
-
         String host = args.length > 0 ? args[0] : "localhost";
         ConnectionFactory factory = new ActiveMQConnectionFactory("failover://tcp://" + host + ":61616");
         ((ActiveMQConnectionFactory) factory).setTrustAllPackages(true);
@@ -67,16 +66,18 @@ public class AFQService extends AbstractQuotationService {
         connection.setClientID("auldfellas");
         Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
-        Queue queue = session.createQueue("QUOTATIONS");
-        Topic topic = session.createTopic("APPLICATIONS");
+        Queue queue = session.createQueue(Constants.QUOTATIONS_QUEUE);
+        Topic topic = session.createTopic(Constants.APPLICATIONS_TOPIC);
         MessageProducer producer = session.createProducer(queue);
         MessageConsumer consumer = session.createConsumer(topic);
 
         connection.start();
+        log.info("AuldFellas service starts");
 
         while (true) {
             // Get the next message from the APPLICATION topic
             Message message = consumer.receive();
+            log.info("New message received");
             // Check it is the right type of message
             if (message instanceof ObjectMessage) {
                 // It’s an Object Message
