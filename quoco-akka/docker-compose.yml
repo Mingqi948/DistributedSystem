@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  broker:
+    container_name: broker_ws
+    image: broker_ws_img
+    build: broker
+    ports:
+      - "9000:9000"
+    depends_on:
+      - auldfellas
+      - girlpower
+      - dodgydrivers
+
+  auldfellas:
+    container_name: auldfellas_ws
+    image: auldfellas_ws_img
+    build: auldfellas
+
+
+  girlpower:
+    container_name: girlpower_ws
+    image: girlpower_ws_img
+    build: girlpower
+
+
+  dodgydrivers:
+    container_name: dodgydrivers_ws
+    image: dodgydrivers_ws_img
+    build: dodgydrivers
+
+  client:
+    container_name: client_ws
+    image: client_ws_img
+    build: client
+    depends_on:
+      - broker
