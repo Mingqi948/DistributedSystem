@@ -6,8 +6,12 @@ public class ApplicationRequest implements MySerializable {
 
     private ClientInfo clientInfo;
 
-    public ApplicationRequest(ClientInfo info) {
-        this.clientInfo = info;
+    public ApplicationRequest() {
+
+    }
+
+    public ApplicationRequest(ClientInfo clientInfo) {
+        this.clientInfo = clientInfo;
     }
 
     public void setClientInfo(ClientInfo info) {

@@ -10,6 +10,10 @@ public class ApplicationResponse implements MySerializable {
     private ClientInfo clientInfo;
     private List<Quotation> quotations;
 
+    public ApplicationResponse() {
+
+    }
+
     public ApplicationResponse(ClientInfo info, List<Quotation> quotations) {
         this.clientInfo = info;
         this.quotations = quotations;

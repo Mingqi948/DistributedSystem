@@ -3,8 +3,8 @@
 function cleanDocker() {
 
   echo ">> Cleaning docker images and containers <<"
-  declare -a images=("auldfellas_ws_img" "broker_ws_img" "dodgydrivers_ws_img" "girlpower_ws_img" "client_ws_img")
-  declare -a containers=("auldfellas_ws" "broker_ws" "dodgydrivers_ws" "girlpower_ws" "client_ws")
+  declare -a images=("auldfellas_akka_img" "broker_akka_img" "dodgydrivers_akka_img" "girlpower_akka_img" "client_akka_img")
+  declare -a containers=("auldfellas_akka" "broker_akka" "dodgydrivers_akka" "girlpower_akka" "client_akka")
 
   #Stop & Remove containers
   for container in "${containers[@]}"
@@ -27,5 +27,5 @@ cleanDocker #Clean
 echo ">> Packaging maven project <<"
 mvn clean package #Packaging
 echo ">> Running docker compose <<"
-docker-compose -p quoco_ws up #Run docker-compose
+docker-compose -p quoco_akka up #Run docker-compose
 cleanDocker #Finish up

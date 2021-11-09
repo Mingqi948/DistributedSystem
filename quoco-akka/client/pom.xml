@@ -9,63 +9,60 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <main.class>Main</main.class>
+        <akka.version>2.6.0-M3</akka.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>quoco.ws</groupId>
+            <groupId>lab6</groupId>
             <artifactId>core</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-catalina</artifactId>
-            <version>9.0.38</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-testkit_2.12</artifactId>
+            <version>${akka.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.metro</groupId>
-            <artifactId>webservices-rt</artifactId>
-            <version>2.4.4</version>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>${akka.version}</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.xml.ws</groupId>
-            <artifactId>jakarta.xml.ws-api</artifactId>
-            <version>2.3.3</version>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-remote_2.12</artifactId>
+            <version>${akka.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.org.apache.xml.internal</groupId>
-            <artifactId>resolver</artifactId>
-            <version>20050927</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.10.6.Final</version>
         </dependency>
         <dependency>
-            <groupId>org.jmdns</groupId>
-            <artifactId>jmdns</artifactId>
-            <version>3.5.5</version>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-cluster-typed_2.12</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-serialization-jackson_2.12</artifactId>
+            <version>${akka.version}</version>
         </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <main.class>Client</main.class>
-    </properties>
-
     <build>
         <plugins>
-            <!-- Plugin used to run Java programs -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <configuration>
-                    <mainClass>${main.class}</mainClass>
-                </configuration>
-            </plugin>
-
-            <!-- Plugins for packaging the code as an Executable JAR and deploying it as a Docker image -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -85,6 +82,24 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <mainClass>${main.class}</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
             </plugin>
         </plugins>
     </build>
