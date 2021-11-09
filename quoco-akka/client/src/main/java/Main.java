@@ -20,9 +20,7 @@ public class Main {
             new ClientInfo("Donald Duck", ClientInfo.MALE, 35, 5, 2, "XYZ567/9")
     };
 
-    public static void main(String[] args) throws Exception{
-
-        Thread.sleep(8000);
+    public static void main(String[] args) {
 
         ActorSystem system = ActorSystem.create();
         ActorRef ref = system.actorOf(Props.create(Client.class), "client");
