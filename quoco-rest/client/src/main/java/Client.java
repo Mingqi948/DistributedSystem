@@ -32,7 +32,7 @@ public class Client {
             RestTemplate restTemplate = new RestTemplate();
             ClientApplication applicationRequest = new ClientApplication(ID++, info);
             HttpEntity<ClientApplication> httpRequest = new HttpEntity(applicationRequest);
-            ClientApplicationResponse applicationResponse = restTemplate.postForObject("http://localhost:8080/application",
+            ClientApplicationResponse applicationResponse = restTemplate.postForObject("http://broker:8080/application",
                     httpRequest, ClientApplicationResponse.class);
             displayProfile(applicationResponse.getInfo());
             for(Quotation quotation : applicationResponse.getQuotations()) {

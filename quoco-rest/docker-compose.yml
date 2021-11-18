@@ -6,7 +6,6 @@ services:
     image: auldfellas_rest_img
     container_name: auldfellas_rest
     build: auldfellas
-    network_mode: "service:broker"
     depends_on:
       - broker
 
@@ -14,7 +13,6 @@ services:
     image: girlpower_rest_img
     container_name: girlpower_rest
     build: girlpower
-    network_mode: "service:broker"
     depends_on:
         - broker
 
@@ -22,7 +20,6 @@ services:
     image: dodgydrivers_rest_img
     container_name: dodgydrivers_rest
     build: dodgydrivers
-    network_mode: "service:broker"
     depends_on:
       - broker
 
@@ -32,13 +29,11 @@ services:
     build: broker
     ports:
       - "8080:8080"
-    network_mode: host
 
   client:
     image: client_rest_img
     container_name: client_rest
     build: client
-    network_mode: "service:broker"
     depends_on:
       - auldfellas
       - dodgydrivers
